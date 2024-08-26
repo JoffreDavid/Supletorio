@@ -3,43 +3,39 @@ package com.example.supletorio.services;
 import com.example.supletorio.models.Tasks;
 import com.example.supletorio.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
-public class TasksServiceImpl implements TaskService{
-    @Autowired
-    private TaskRepository tasksRepository;
+@Service
+public class TasksServiceImpl implements TaskService {
 
-    @Override
-    public Iterable<Tasks> findAll() {
-        return tasksRepository.findAll();
-    }
+    @Autowired
+    private TaskRepository taskRepository;
 
     @Override
     @Transactional(readOnly = true)
-    public Page<Tasks> findAll(Pageable pageable) {
-        return tasksRepository.findAll(pageable);
+    public List<Tasks> findAll() {
+        return taskRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<Tasks> findById(Long id) {
-        return tasksRepository.findById(id);
+        return taskRepository.findById(id);
     }
 
     @Override
     @Transactional
-    public Tasks save(Tasks tareas) {
-        return tasksRepository.save(tareas);
+    public Tasks save(Tasks task) {
+        return taskRepository.save(task);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-        tasksRepository.deleteById(id);
+        taskRepository.deleteById(id);
     }
 }

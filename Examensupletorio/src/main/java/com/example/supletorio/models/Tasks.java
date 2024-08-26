@@ -4,33 +4,35 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tareas")
-
-
-public class Tasks  {
+public class Tasks {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "nombre")
-    private String nombre;
+    @Column(name = "titulo")
+    private String titulo;
 
     @Column(name = "descripcion")
     private String descripcion;
 
     @Column(name = "estado")
-    private String estado;
+    private boolean estado;
 
     @Column(name = "fecha")
     private String fecha;
 
-    public String getNombre() {
-        return nombre;
+    // Getters y Setters
+    public Long getId() {
+        return id;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
     }
 
     public String getDescripcion() {
@@ -41,11 +43,11 @@ public class Tasks  {
         this.descripcion = descripcion;
     }
 
-    public String getEstado() {
+    public boolean getEstado() {
         return estado;
     }
 
-    public void setEstado(String estado) {
+    public void setEstado(boolean estado) {
         this.estado = estado;
     }
 
@@ -56,15 +58,4 @@ public class Tasks  {
     public void setFecha(String fecha) {
         this.fecha = fecha;
     }
-
-    @Override
-    public String toString() {
-        return "Tasks{" +
-                "nombre='" + nombre + '\'' +
-                ", descripcion='" + descripcion + '\'' +
-                ", estado='" + estado + '\'' +
-                ", fecha='" + fecha + '\'' +
-                '}';
-    }
 }
-

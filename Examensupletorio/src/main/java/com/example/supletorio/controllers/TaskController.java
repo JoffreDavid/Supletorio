@@ -7,47 +7,64 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/tareas")
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     @Autowired
-    private TaskService tareasServicio;
+    private TaskService taskService;
 
-    @GetMapping("/{Id}")
+    @GetMapping
+    public List<Tasks> readTasks() {
+        return taskService.findAll().stream().collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}")
     public ResponseEntity<?> readOne(@PathVariable(value = "id") Long id) {
-        Optional<Tasks> oTarea = tareasServicio.findById(id);
+        Optional<Tasks> task = taskService.findById(id);
+        return task.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
-        if (!oTarea.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(oTarea);
+    @PostMapping
+    public ResponseEntity<?> create(@RequestBody Tasks newTask) {
+        Tasks savedTask = taskService.save(newTask);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody Tasks tareaDetails, @PathVariable(value = "id") Long id) {
-        Optional<Tasks> tarea = tareasServicio.findById(id);
-        if (!tarea.isPresent()) {
+    public ResponseEntity<?> update(@RequestBody Tasks taskDetails, @PathVariable(value = "id") Long id) {
+        Optional<Tasks> task = taskService.findById(id);
+        if (!task.isPresent()) {
             return ResponseEntity.notFound().build();
         }
 
+        Tasks existingTask = task.get();
+        existingTask.setTitulo(taskDetails.getTitulo());
+        existingTask.setDescripcion(taskDetails.getDescripcion());
+        existingTask.setEstado(taskDetails.getEstado());
+        existingTask.setFecha(taskDetails.getFecha());
 
-        tarea.get().setNombre(tareaDetails.getNombre());
-        tarea.get().setDescripcion(tareaDetails.getDescripcion());
-        tarea.get().setEstado(tareaDetails.getEstado());
-        tarea.get().setFecha(tareaDetails.getFecha());
-        return ResponseEntity.status(HttpStatus.CREATED).body(tareasServicio.save(tareaDetails.get()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.save(existingTask));
     }
 
-    //Delete a tarea
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable(value = "id") Long id) {
-        if (!tareasServicio.findById(id).isPresent()) {
+        if (!taskService.findById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        tareasServicio.deleteById(id);
+        taskService.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/status/{estado}")
+    public List<Tasks> getTasksByStatus(@PathVariable(value = "estado") boolean estado) {
+        return taskService.findAll()
+                .stream()
+                .filter(task -> task.getEstado() == estado)
+                .collect(Collectors.toList());
     }
 }
